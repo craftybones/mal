@@ -10,6 +10,10 @@ class List {
   isEmpty() {
     return this.ast.length == 0;
   }
+
+  count() {
+    return this.ast.length;
+  }
 }
 
 class Vector {
@@ -19,6 +23,14 @@ class Vector {
 
   toString() {
     return "[" + this.ast.map(x=>x.toString()).join(" ") + "]";
+  }
+
+  isEmpty() {
+    return this.ast.length == 0;
+  }
+
+  count() {
+    return this.ast.length;
   }
 }
 
@@ -41,6 +53,15 @@ class HashMap {
     }
     return "{" + str + "}";
   }
+
+  isEmpty() {
+    return this.hashmap.size == 0;
+  }
+
+  count() {
+    return this.hashmap.size;
+  }
+
 }
 
 class Nil {
@@ -79,4 +100,18 @@ class Keyword {
   }
 }
 
-module.exports = { List, Vector, Nil, Symbol, Str, HashMap, Keyword };
+class Fn {
+  constructor(fn) {
+    this.fn = fn;
+  }
+
+  toString() {
+    return "#<function>";
+  }
+
+  apply(args) {
+    return this.fn.apply(null, args);
+  }
+}
+
+module.exports = { List, Vector, Nil, Symbol, Str, HashMap, Keyword, Fn };

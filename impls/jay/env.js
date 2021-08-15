@@ -1,7 +1,11 @@
 class Env {
-  constructor(outer) {
+  constructor(outer,binds=[],exprs=[]) {
     this.outer = outer;
     this.data = {};
+
+    binds.forEach((symbol, index) => {
+      this.set(symbol, exprs[index]);
+    })
   }
 
   set(key, value) {
