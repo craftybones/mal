@@ -21,6 +21,15 @@ class List extends MalValue {
   pr_str(print_readably=false) {
     return "(" + this.ast.map(x=>pr_str(x,print_readably)).join(" ") + ")";
   }
+
+  isEmpty() {
+    return this.ast.length == 0;
+  }
+  
+  map(evalFn, env) {
+    const newAst = this.ast.map(x => evalFn(x, env));
+    return new List(newAst);
+  }
 }
 
 class Vector extends MalValue {
@@ -29,6 +38,10 @@ class Vector extends MalValue {
     this.ast = ast;
   }
 
+  isEmpty() {
+    return this.ast.length == 0;
+  }
+  
   pr_str(print_readably=false) {
     return "[" + this.ast.map(pr_str).join(" ") + "]";
   }
