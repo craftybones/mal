@@ -2,11 +2,19 @@ class MalValue {
   pr_str(print_readably=false) {
     return "---default mal val---";
   }
+
+  eql(other) {
+    return other === this;
+  }
 }
 
 const pr_str = (val,print_readably=false) => {
   if (val instanceof MalValue) {
     return val.pr_str(print_readably);
+  }
+
+  if (val instanceof Function) {
+    return "#<function>";
   }
   
   return val.toString();
@@ -25,10 +33,27 @@ class List extends MalValue {
   isEmpty() {
     return this.ast.length == 0;
   }
-  
-  map(evalFn, env) {
-    const newAst = this.ast.map(x => evalFn(x, env));
-    return new List(newAst);
+
+  count() {
+    return this.ast.length;
+  }
+
+  eql(other) {
+    if (!((other instanceof List) || (other instanceof Vector))) {
+      return false;
+    }
+
+    if (this.count() !== other.count()) {
+      return false;
+    }
+
+    for (let i = 0; i < this.count(); i++) {
+      if (!eql(this.ast[i], other.ast[i])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
@@ -41,9 +66,31 @@ class Vector extends MalValue {
   isEmpty() {
     return this.ast.length == 0;
   }
+
+  count() {
+    return this.ast.length;
+  }
   
   pr_str(print_readably=false) {
     return "[" + this.ast.map(pr_str).join(" ") + "]";
+  }
+
+  eql(other) {
+    if (!((other instanceof List) || (other instanceof Vector))) {
+      return false;
+    }
+
+    if (this.count() !== other.count()) {
+      return false;
+    }
+
+    for (let i = 0; i < this.count(); i++) {
+      if (!eql(this.ast[i], other.ast[i])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
 
@@ -89,6 +136,10 @@ class Str extends MalValue {
     }
     return '"' + this.string + '"';
   }
+
+  eql(other) {
+    return (other instanceof Str) && this.string === other.string;
+  }
 }
 
 class Keyword extends MalValue {
@@ -100,6 +151,11 @@ class Keyword extends MalValue {
   pr_str(print_readably=false) {
     return ':' + this.keyword;
   }
+
+  eql(other) {
+    return (other instanceof Keyword) && this.keyword === other.keyword;
+  }
+
 }
 
 class MalSymbol extends MalValue {
@@ -111,10 +167,35 @@ class MalSymbol extends MalValue {
   pr_str(print_readably=false) {
     return this.symbol;
   }
+
+  eql(other) {
+    return (other instanceof MalSymbol) && this.symbol === other.symbol;
+  }
+
+}
+
+class Fn extends MalValue {
+  constructor(binds, fnBody, env) {
+    super();
+    this.binds = binds;
+    this.fnBody = fnBody;
+    this.env = env;
+  }
+
+  pr_str(print_readably = false) {
+    return "#<function>";
+  }
 }
 
 const Nil = new NilVal();
 
+const eql = (a, b) => {
+  if ((a instanceof MalValue) && (b instanceof MalValue)) {
+    return a.eql(b);
+  }
+  return a === b;
+}
+
 module.exports = {
-  MalValue, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, pr_str
+  MalValue, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, Fn, pr_str, eql
 }
