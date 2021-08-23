@@ -134,7 +134,7 @@ class Str extends MalValue {
         .replace(/"/g, '\\"')
         .replace(/\n/g, "\\n") + '"';
     }
-    return '"' + this.string + '"';
+    return this.string;
   }
 
   eql(other) {
@@ -175,11 +175,12 @@ class MalSymbol extends MalValue {
 }
 
 class Fn extends MalValue {
-  constructor(binds, fnBody, env) {
+  constructor(binds, fnBody, env, fn) {
     super();
     this.binds = binds;
     this.fnBody = fnBody;
     this.env = env;
+    this.fn = fn;
   }
 
   pr_str(print_readably = false) {
@@ -189,6 +190,35 @@ class Fn extends MalValue {
 
 const Nil = new NilVal();
 
+class Atom extends MalValue {
+  constructor(val) {
+    super();
+    this.val = val;
+  }
+
+  deref() {
+    return this.val;
+  }
+
+  pr_str(print_readably = false) {
+    return "(atom " + pr_str(this.val, print_readably) + ")";
+  }
+
+  reset(newVal) {
+    this.val = newVal;
+    return this.val;
+  }
+
+  swap(fn, args) {
+    let actualFn = fn;
+    if (fn instanceof Fn) {
+      actualFn = fn.fn;
+    }
+    this.val = actualFn.apply(null, [this.val].concat(args));
+    return this.val;
+  }
+}
+
 const eql = (a, b) => {
   if ((a instanceof MalValue) && (b instanceof MalValue)) {
     return a.eql(b);
@@ -197,5 +227,5 @@ const eql = (a, b) => {
 }
 
 module.exports = {
-  MalValue, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, Fn, pr_str, eql
+  MalValue, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, Fn, Atom, pr_str, eql
 }

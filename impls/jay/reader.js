@@ -1,5 +1,12 @@
 const { List, Vector, Nil, Str, Keyword, MalSymbol, Hashmap  } = require('./types');
 
+class CommentError extends Error {
+  constructor() {
+    super("comment error");
+    this.name = "CommentError"
+  }
+}
+
 class Reader {
   constructor(tokens) {
     this.tokens = tokens;
@@ -22,7 +29,7 @@ class Reader {
 const tokenize = (str) => {
   const re = /[\s,]*(~@|[\[\]{}()'`~^@]|"(?:\\.|[^\\"])*"?|;.*|[^\s\[\]{}('"`,;)]*)/g;
 
-  return [...str.matchAll(re)].map(x => x[1]).slice(0, -1);
+  return [...str.matchAll(re)].map(x => x[1]).slice(0, -1).filter(y => !y.startsWith(';'));
 }
 
 const read_atom = (reader) => {
@@ -105,6 +112,14 @@ const read_hashmap = (reader) => {
   return new Hashmap(hashmap);
 };
 
+const read_deref = (reader) => {
+  reader.next();
+  const symbol = new MalSymbol(reader.peek());
+  const deref = new MalSymbol("deref");
+  reader.next();
+  return new List([deref, symbol]);
+}
+
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -112,6 +127,7 @@ const read_form = (reader) => {
     case '(': return read_list(reader);
     case '[': return read_vector(reader);
     case '{': return read_hashmap(reader);
+    case '@': return read_deref(reader);
     case ']': throw 'unbalanced ]';
     case ')': throw 'unbalanced )';
     case '}': throw 'unbalanced }';
