@@ -20,14 +20,15 @@ const pr_str = (val,print_readably=false) => {
   return val.toString();
 }
 
-class List extends MalValue {
+class MalSequence extends MalValue {
   constructor(ast) {
     super();
     this.ast = ast;
   }
 
-  pr_str(print_readably=false) {
-    return "(" + this.ast.map(x=>pr_str(x,print_readably)).join(" ") + ")";
+  pr_seq(print_readably = false, brackets = ['(', ')']) {
+    const [opening, closing] = brackets;
+    return opening + this.ast.map(x=>pr_str(x,print_readably)).join(" ") + closing;
   }
 
   isEmpty() {
@@ -39,7 +40,7 @@ class List extends MalValue {
   }
 
   eql(other) {
-    if (!((other instanceof List) || (other instanceof Vector))) {
+    if (!(other instanceof MalSequence)) {
       return false;
     }
 
@@ -54,43 +55,55 @@ class List extends MalValue {
     }
 
     return true;
+  }
+
+  cons(value) {
+    return [value].concat(this.ast);
+  }
+
+  concat(otherSeq) {
+    return this.ast.concat(otherSeq.ast);
+  }
+
+  beginsWith(symbol) {
+    return !this.isEmpty() && (this.ast[0].symbol === symbol);
   }
 }
 
-class Vector extends MalValue {
+class List extends MalSequence {
+  pr_str(print_readably = false) {
+    return this.pr_seq(print_readably);
+  }
+
+  cons(value) {
+    const newAst = super.cons(value);
+    return new List(newAst);
+  }
+
+  concat(otherSeq) {
+    const newAst = super.concat(otherSeq);
+    return new List(newAst);
+  }
+}
+
+class Vector extends MalSequence {
   constructor(ast) {
     super();
     this.ast = ast;
   }
 
-  isEmpty() {
-    return this.ast.length == 0;
-  }
-
-  count() {
-    return this.ast.length;
-  }
-  
   pr_str(print_readably=false) {
-    return "[" + this.ast.map(pr_str).join(" ") + "]";
+    return this.pr_seq(print_readably,['[',']']);
   }
 
-  eql(other) {
-    if (!((other instanceof List) || (other instanceof Vector))) {
-      return false;
-    }
+  cons(value) {
+    const newAst = super.cons(value);
+    return new List(newAst);
+  }
 
-    if (this.count() !== other.count()) {
-      return false;
-    }
-
-    for (let i = 0; i < this.count(); i++) {
-      if (!eql(this.ast[i], other.ast[i])) {
-        return false;
-      }
-    }
-
-    return true;
+  concat(otherSeq) {
+    const newAst = super.concat(otherSeq);
+    return new List(newAst);
   }
 }
 
@@ -227,5 +240,5 @@ const eql = (a, b) => {
 }
 
 module.exports = {
-  MalValue, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, Fn, Atom, pr_str, eql
+  MalValue, MalSequence, List, Vector, Str, Nil, Keyword, MalSymbol, Hashmap, Fn, Atom, pr_str, eql
 }

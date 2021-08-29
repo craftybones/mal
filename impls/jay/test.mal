@@ -1,0 +1,12 @@
+(def! person
+  (fn* [name age]
+    (let* [name (atom name)
+           age (atom age)]
+      (fn* [method arg]
+        (if (= method :increment-age)
+            (swap! age + 1)
+            (if (= method :decrement-age)
+                (swap! age - 1)
+                (if (= method :to-string)
+                    (str @name @age)
+                    :method-not-found)))))))

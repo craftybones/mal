@@ -1,5 +1,5 @@
 const { pr_str } = require('./printer');
-const { Nil, Str, List, eql, Atom } = require('./types');
+const { Nil, Str, List, eql, Atom, Vector } = require('./types');
 const { read_str } = require('./reader');
 const fs = require('fs');
 
@@ -81,6 +81,14 @@ module.exports = {
   },
   'swap!': (atom,f,...args) => {
     return atom.swap(f,args);
+  },
+  'cons': (val, seq) => seq.cons(val),
+  'concat': (...sequences) => {
+    const x = new List([]);
+    return sequences.reduce((l, o) => l.concat(o), x);
+  },
+  'vec': (seq) => {
+    return new Vector(seq.ast.slice());
   }
 }
 
