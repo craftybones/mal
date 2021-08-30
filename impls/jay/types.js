@@ -66,6 +66,14 @@ class List extends MalSequence {
   pr_str(print_readably = false) {
     return this.pr_seq(print_readably);
   }
+
+  cons(element) {
+    return new List([element,...this.ast]);
+  }
+
+  concat(other) {
+    return new List(this.ast.concat(other.ast));
+  }
 }
 
 class Vector extends MalSequence {
@@ -76,6 +84,14 @@ class Vector extends MalSequence {
 
   pr_str(print_readably=false) {
     return this.pr_seq(print_readably,['[',']']);
+  }
+
+  cons(element) {
+    return new List([element,...this.ast]);
+  }
+
+  concat(other) {
+    return new List(this.ast.concat(other.ast));
   }
 }
 

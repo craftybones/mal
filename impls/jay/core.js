@@ -85,5 +85,15 @@ module.exports = {
   'swap!': (atom,f,...args) => {
     return atom.swap(f,args);
   },
+  'cons': (element, seq) => {
+    return seq.cons(element);
+  },
+  'concat': (...lists) => {
+    const list = new List([]);
+    return lists.reduce((a,b)=>a.concat(b),list);
+  },
+  'vec': (seq) => {
+    return new Vector([...seq.ast]);
+  }
 }
 

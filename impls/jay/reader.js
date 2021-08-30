@@ -123,6 +123,22 @@ const read_deref = (reader) => {
   return prependSymbol(reader, "deref");
 }
 
+const read_quote = (reader) => {
+  return prependSymbol(reader, "quote");
+}
+
+const read_quasiquote = (reader) => {
+  return prependSymbol(reader, "quasiquote");
+}
+
+const read_unquote = (reader) => {
+  return prependSymbol(reader, "unquote");
+}
+
+const read_splice_unquote = (reader) => {
+  return prependSymbol(reader, "splice-unquote");
+}
+
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -131,6 +147,10 @@ const read_form = (reader) => {
     case '[': return read_vector(reader);
     case '{': return read_hashmap(reader);
     case '@': return read_deref(reader);
+    case "'": return read_quote(reader);
+    case "`": return read_quasiquote(reader);
+    case "~": return read_unquote(reader);
+    case "~@": return read_splice_unquote(reader);
     case ']': throw 'unbalanced ]';
     case ')': throw 'unbalanced )';
     case '}': throw 'unbalanced }';
@@ -145,4 +165,4 @@ const read_str = (str) => {
   return read_form(reader);
 }
 
-module.exports = { read_str };
+module.exports = { read_str, prependSymbol };
