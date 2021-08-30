@@ -119,6 +119,10 @@ const prependSymbol = (reader, symbolStr) => {
   return new List([symbol, newAst]);  
 }
 
+const read_deref = (reader) => {
+  return prependSymbol(reader, "deref");
+}
+
 const read_form = (reader) => {
   const token = reader.peek();
 
