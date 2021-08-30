@@ -119,42 +119,6 @@ const prependSymbol = (reader, symbolStr) => {
   return new List([symbol, newAst]);  
 }
 
-const read_deref = (reader) => {
-  // reader.next();
-  // const deref = new MalSymbol("deref");
-  // const symbol = read_form(reader);
-  // return new List([deref, symbol]);
-  return prependSymbol(reader, "deref");
-}
-
-const read_quote = (reader) => {
-  reader.next();
-  const quote = new MalSymbol("quote");
-  const ast = read_form(reader);
-  return new List([quote, ast]);
-}
-
-const read_quasiquote = (reader) => {
-  reader.next();
-  const quote = new MalSymbol("quasiquote");
-  const ast = read_form(reader);
-  return new List([quote, ast]);
-}
-
-const read_unquote = (reader) => {
-  reader.next();
-  const quote = new MalSymbol("unquote");
-  const ast = read_form(reader);
-  return new List([quote, ast]);
-}
-
-const read_splice_unquote = (reader) => {
-  reader.next();
-  const quote = new MalSymbol("splice-unquote");
-  const ast = read_form(reader);
-  return new List([quote, ast]);
-}
-
 const read_form = (reader) => {
   const token = reader.peek();
 
@@ -163,11 +127,6 @@ const read_form = (reader) => {
     case '[': return read_vector(reader);
     case '{': return read_hashmap(reader);
     case '@': return read_deref(reader);
-    case '\'': return read_quote(reader);
-    case '`': return read_quasiquote(reader);
-    case '~': return read_unquote(reader);
-    case '~': return read_unquote(reader);
-    case '~@': return read_splice_unquote(reader);
     case ']': throw 'unbalanced ]';
     case ')': throw 'unbalanced )';
     case '}': throw 'unbalanced }';
@@ -181,6 +140,5 @@ const read_str = (str) => {
   const reader = new Reader(tokens);
   return read_form(reader);
 }
-
 
 module.exports = { read_str };

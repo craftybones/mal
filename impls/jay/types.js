@@ -57,55 +57,14 @@ class MalSequence extends MalValue {
     return true;
   }
 
-  cons(value) {
-    return [value].concat(this.ast);
-  }
-
-  concat(otherSeq) {
-    return this.ast.concat(otherSeq.ast);
-  }
-
   beginsWith(symbol) {
     return !this.isEmpty() && (this.ast[0].symbol === symbol);
-  }
-
-  nth(n) {
-    if (n >= this.ast.length) {
-      throw "index out of range";
-    }
-    return this.ast[n];
-  }
-
-  first() {
-    if (this.isEmpty()) {
-      return Nil;
-    }
-    return this.ast[0];
-  }
-
-  rest() {
-    return this.ast.slice(1);
   }
 }
 
 class List extends MalSequence {
   pr_str(print_readably = false) {
     return this.pr_seq(print_readably);
-  }
-
-  cons(value) {
-    const newAst = super.cons(value);
-    return new List(newAst);
-  }
-
-  concat(otherSeq) {
-    const newAst = super.concat(otherSeq);
-    return new List(newAst);
-  }
-
-  rest() {
-    const newAst = super.rest();
-    return new List(newAst);
   }
 }
 
@@ -117,21 +76,6 @@ class Vector extends MalSequence {
 
   pr_str(print_readably=false) {
     return this.pr_seq(print_readably,['[',']']);
-  }
-
-  cons(value) {
-    const newAst = super.cons(value);
-    return new List(newAst);
-  }
-
-  concat(otherSeq) {
-    const newAst = super.concat(otherSeq);
-    return new List(newAst);
-  }
-
-  rest() {
-    const newAst = super.rest();
-    return new List(newAst);
   }
 }
 
@@ -216,13 +160,12 @@ class MalSymbol extends MalValue {
 }
 
 class Fn extends MalValue {
-  constructor(binds, fnBody, env, fn, isMacro = false) {
+  constructor(binds, fnBody, env, fn) {
     super();
     this.binds = binds;
     this.fnBody = fnBody;
     this.env = env;
     this.fn = fn;
-    this.isMacro = isMacro;
   }
 
   pr_str(print_readably = false) {

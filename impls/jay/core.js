@@ -85,37 +85,5 @@ module.exports = {
   'swap!': (atom,f,...args) => {
     return atom.swap(f,args);
   },
-  'cons': (val, seq) => seq.cons(val),
-  'concat': (...sequences) => {
-    const x = new List([]);
-    return sequences.reduce((l, o) => l.concat(o), x);
-  },
-  'vec': (seq) => {
-    return new Vector(seq.ast.slice());
-  },
-  'nth': (seq, n) => {
-    if (!(seq instanceof MalSequence)) {
-      throw "nth only supported on sequences";
-    }
-    return seq.nth(n);
-  },
-  'first': (seq, n) => {
-    if (seq == Nil) {
-      return Nil;
-    }
-    if (!(seq instanceof MalSequence)) {
-      throw "first only supported on sequences";
-    }
-    return seq.first();
-  },
-  'rest': (seq) => {
-    if (seq == Nil) {
-      return new List([]);
-    }
-    if (!(seq instanceof MalSequence)) {
-      throw "rest only supported on sequences";
-    }
-    return seq.rest();
-  }
 }
 
