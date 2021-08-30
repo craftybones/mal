@@ -1,5 +1,5 @@
 const { pr_str } = require('./printer');
-const { Nil, Str, List, eql, Atom, Vector } = require('./types');
+const { Nil, Str, List, eql, Atom, Vector, MalSequence } = require('./types');
 const { read_str } = require('./reader');
 const fs = require('fs');
 
@@ -25,6 +25,9 @@ module.exports = {
     return a.isEmpty();
   },
   'count': (a) => {
+    if (!(a instanceof MalSequence)) {
+      return 0;
+    }
     return a.count();
   },
   'list': (...args) => {    
@@ -89,6 +92,30 @@ module.exports = {
   },
   'vec': (seq) => {
     return new Vector(seq.ast.slice());
+  },
+  'nth': (seq, n) => {
+    if (!(seq instanceof MalSequence)) {
+      throw "nth only supported on sequences";
+    }
+    return seq.nth(n);
+  },
+  'first': (seq, n) => {
+    if (seq == Nil) {
+      return Nil;
+    }
+    if (!(seq instanceof MalSequence)) {
+      throw "first only supported on sequences";
+    }
+    return seq.first();
+  },
+  'rest': (seq) => {
+    if (seq == Nil) {
+      return new List([]);
+    }
+    if (!(seq instanceof MalSequence)) {
+      throw "rest only supported on sequences";
+    }
+    return seq.rest();
   }
 }
 

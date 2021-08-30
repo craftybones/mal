@@ -1,4 +1,4 @@
-const { MalSymbol,Nil } = require('./types');
+const { MalSymbol,Nil,List,eql } = require('./types');
 
 class Env {
   constructor(outer=null) {
@@ -34,9 +34,15 @@ class Env {
 
   static createEnv(outer = null, binds = [], exprs = []) {
     const env = new Env(outer);
-    binds.forEach((symbol, index) => {
-      env.set(symbol, exprs[index]);
-    })
+    const ampersand = new MalSymbol("&");
+    for (let i = 0; i < binds.length; i++) {
+      if (eql(binds[i], ampersand)) {
+        const rest = exprs.slice(i);
+        env.set(binds[i + 1], rest.length === 0?Nil:new List(rest));
+        return env;
+      }
+      env.set(binds[i], exprs[i]);
+    }
     return env;
   }
 }
