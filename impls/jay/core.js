@@ -94,6 +94,26 @@ module.exports = {
   },
   'vec': (seq) => {
     return new Vector([...seq.ast]);
-  }
+  },
+  'nth': (seq,n) => {
+    return seq.nth(n);
+  },
+  'first': (seq) => {
+    if (seq === Nil) {
+      return Nil;
+    }
+    return seq.first();
+  },
+  'rest': (seq) => {
+    if (seq === Nil) {
+      return new List([]);
+    }
+    return seq.rest();
+  },
+  'apply': (seq) => {
+    if (seq === Nil) {
+      return new List([]);
+    }
+    return seq.rest();
+  },
 }
-

@@ -1,12 +1,13 @@
-(def! person
-  (fn* [name age]
-       (let* [name (atom name)
-              age (atom age)]
-             (fn* [method arg]
-                  (if (= method :increment-age)
-                    (swap! age + 1)
-                    (if (= method :decrement-age)
-                      (swap! age - 1)
-                      (if (= method :to-string)
-                        (str @name @age)
-                        :method-not-found)))))))
+(defn! every? [predicate seq]
+  (if (empty? seq)
+    true
+    (if (predicate (first seq))
+      (every? predicate (rest seq))
+      false)))
+
+(defn! some? [predicate seq]
+  (if (empty? seq)
+    false
+    (if (predicate (first seq))
+      true
+      (some? predicate (rest seq)))))
